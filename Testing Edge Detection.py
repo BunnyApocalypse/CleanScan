@@ -2,7 +2,7 @@ __author__ = 'huangb3'
 import cv2
 import numpy
 
-img1 = cv2.imread("TestImages/textscan.jpg")
+img1 = cv2.imread("TestImages/textscancrop.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 
 grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
@@ -28,4 +28,5 @@ for lineSet in lines:
                  (255, 255, 0))
 
 cv2.imshow("HoughLines", img1)
+cv2.imshow("greyscale", grayImg)
 cv2.waitKey(0)
