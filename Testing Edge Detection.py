@@ -3,8 +3,13 @@ import cv2
 import numpy
 
 img1 = cv2.imread("TestImages/textscan.jpg")
+#kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 
 grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+kernel = numpy.ones((11,11),numpy.uint8)
+grayImg = cv2.GaussianBlur(grayImg, (11, 11), 1)
+grayImg = cv2.erode(grayImg, kernel, iterations=1)
+res, grayImg = cv2.threshold(grayImg, 150, 255, cv2.THRESH_BINARY)
 
 cannyImg = cv2.Canny(grayImg, 100, 200)
 
@@ -12,7 +17,7 @@ lines = cv2.HoughLinesP(cannyImg, 1, numpy.pi/180,
 
                         threshold = 5,
 
-                        minLineLength = 300, maxLineGap = 20)
+                        minLineLength = 300, maxLineGap = 70)
 
 for lineSet in lines:
 
