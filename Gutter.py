@@ -2,7 +2,7 @@ __author__ = 'kingc3'
 import cv2
 import numpy as np
 
-img1 = cv2.imread("TestImages/textscan.jpg")
+img1 = cv2.imread("TestImages/dGRds.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 def gutter(img1):
     grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
@@ -15,12 +15,10 @@ def gutter(img1):
     # cv2.drawContours(img1, contrs, -1, (0,0,0), -1 )
     #cv2.drawContours(img1,contour,-1,(255,0,0),-1)
     (h,w,d) = img1.shape
-    mask = np.zeros((h,w,1),np.uint8)
-    cv2.drawContours(mask, contrs, -1, (255,255,255), -1)
-    finalImg = cv2.bitwise_and(img1,img1, mask=mask)
+    mask = 255*np.ones((h,w,3),np.uint8)
+    cv2.drawContours(mask, contrs, -1, (0,0,0), -1)
+    finalImg = cv2.bitwise_or(img1,mask)
     cv2.imshow("fixed image", finalImg)
-    cv2.imshow("HoughLines", img1)
-    cv2.imshow("greyscale", grayImg)
     cv2.imshow("mask",mask)
     cv2.waitKey(0)
 gutter(img1)
