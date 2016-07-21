@@ -25,9 +25,11 @@ def pew(hist):
     sd /= 255
     sd = math.sqrt(sd)
     print sd
+
 pew(hist)
 
 def calcPeak(hist):
+
 
 
 cv2.waitKey(0)
