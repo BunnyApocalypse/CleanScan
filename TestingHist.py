@@ -1,15 +1,35 @@
 __author__ = 'huangb3'
 import cv2
+import math
 import numpy as np
 from matplotlib import pyplot as plt
-img = cv2.imread('TestImages/textscan.jpg',0)
-hist,bins = np.histogram(img.flatten(),256,[0,256])
-cdf = hist.cumsum()
-cdf_normalized = cdf * hist.max()/ cdf.max()
-print "bop"
-cdf_m = np.ma.masked_equal(cdf,0)
-cdf_m = (cdf_m - cdf_m.min())*255/(cdf_m.max()-cdf_m.min())
-cdf = np.ma.filled(cdf_m,0).astype('uint8')
-img2 = cdf[img]
-print "boop"
-cv2.imshow('wat', img2)
+img1 = cv2.imread("TestImages/textscancrop.jpg")
+#kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
+
+grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+hist = cv2.calcHist(grayImg,[0], None,[256],[0,256])
+cv2.imshow("wee", grayImg)
+
+def pew(hist):
+    mean = float(0)
+    sd = float(0)
+    cumu = float(0)
+    for x in hist:
+        mean = mean + x
+    mean = mean/256
+    print mean
+    for x in hist:
+        cumu = (x - mean)**2
+        sd = sd + cumu
+    print sd
+    sd /= 255
+    sd = math.sqrt(sd)
+    print sd
+pew(hist)
+
+def calcPeak(hist):
+
+
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()

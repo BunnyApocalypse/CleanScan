@@ -33,3 +33,5 @@ for x in goodFeats:
 cv2.imshow("HoughLines", img1)
 cv2.imshow("greyscale", grayImg)
 cv2.waitKey(0)
+
+cv2.equalizeHist()
