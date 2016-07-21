@@ -7,7 +7,7 @@ img1 = cv2.imread("TestImages/textscancrop.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 
 grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-hist = cv2.calcHist(grayImg,[0], None,[256],[0,256])
+hist = cv2.calcHist(grayImg,[0], None, [256], [0, 256])
 cv2.imshow("wee", grayImg)
 
 def pew(hist):
