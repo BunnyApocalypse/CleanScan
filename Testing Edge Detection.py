@@ -26,12 +26,10 @@ for lineSet in lines:
         cv2.line(img1, (line[0], line[1]), (line[2], line[3]),
 
                  (255, 255, 0))
-goodFeats = cv2.goodFeaturesToTrack(grayImg, 200, 0.455, 5)
+goodFeats = cv2.goodFeaturesToTrack(grayImg, 200, 0.455, 15)
 
 for x in goodFeats:
     cv2.circle(img1, (x[0,0],x[0,1]),3,(0,0,255),-1)
 cv2.imshow("HoughLines", img1)
 cv2.imshow("greyscale", grayImg)
 cv2.waitKey(0)
-
-cv2.equalizeHist()
