@@ -2,7 +2,7 @@ __author__ = 'huangb3'
 import cv2
 import numpy as np
 
-img1 = cv2.imread("TestImages/textscancrop.jpg")
+img1 = cv2.imread("TestImages/textscan.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 
 grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
