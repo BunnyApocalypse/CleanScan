@@ -88,7 +88,7 @@ def gutter(img1):
             if abs(line[0] - line[2]) <= w/10:
                 verticaLines.append(line)
     print verticaLines
-
+    #PLUG THE SHIT INTO THE FIRST FUNCTION!
 
 
     for lineSet in lines2:
