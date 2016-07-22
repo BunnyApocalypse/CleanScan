@@ -5,6 +5,13 @@ import math
 
 img1 = cv2.imread("TestImages/textscan.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
+def lineSearch(minX, maxX):
+    if abs(minX[float(1)]-minX[float(3)]/minX[float(0)]-minX[float(2)]) - abs(maxX[float(1)]-maxX[float(3)]/maxX[float(0)]-maxX[float(2)]) > .1 :
+        works = 0
+    else:
+        works = 1
+    return works
+
 def gutter(img1):
     grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     kernel = np.ones((11,11),np.uint8)
@@ -68,13 +75,23 @@ def gutter(img1):
     grayCrop2 = cv2.erode(grayCrop2, kernel, iterations=1)
     cannyImg2 = cv2.Canny(grayCrop2, 100, 200)
 
-    lines = cv2.HoughLinesP(cannyImg2, 1, np.pi/180,
+    lines2 = cv2.HoughLinesP(cannyImg2, 1, np.pi/180,
 
                             threshold = 5,
 
                             minLineLength = 300, maxLineGap = 70)
+    cv2.circle(crop1, (409,50),3,(0,0,255),-1)
+    #check if lines are vertical or horizontal, then search for groups
+    verticaLines = []
+    for lineSet in lines2:
+        for line in lineSet:
+            if abs(line[0] - line[2]) <= w/10:
+                verticaLines.append(line)
+    print verticaLines
 
-    for lineSet in lines:
+
+
+    for lineSet in lines2:
 
         for line in lineSet:
 
@@ -82,7 +99,7 @@ def gutter(img1):
     cv2.imshow('firstcrop',crop1)
     cv2.imshow('secondcrop',crop2)
     cv2.imshow("fixed image", finalImg)
-
+    #print lines
     cv2.imshow("mask",mask)
     cv2.waitKey(0)
 gutter(img1)
