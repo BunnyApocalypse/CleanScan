@@ -36,13 +36,14 @@ def calcSD(arr,mean):
 def poi(hist, mean, Stdev, lag):
     global signal
     for i in range(len(hist)):
-        print "working"
         if i > lag:
             oldmean = mean
             if hist[i] > ((mean + infl * Stdev)/(1+infl)):
                 mean = (oldmean + infl * hist[i]) / (1+infl)
                 Stdev = (Stdev + infl * math.sqrt((hist[i] - oldmean)**2)) / (1+infl)
                 signal[i] = 1
+                if hist[i] > 1.2 * ((mean + infl * Stdev)/(1+infl)):
+                    signal[i] = 2
             else:
                 mean = (oldmean + hist[i]) / 2
                 Stdev = (Stdev + math.sqrt((hist[i] - oldmean) ** 2)) / 2
@@ -50,6 +51,20 @@ def poi(hist, mean, Stdev, lag):
         if i < lag:
             print "wee."
 
+def humpScan(signal):
+    scnVal = 0
+    flag = 0
+    for p in range(len(signal)):
+        if signal[p] == 0:
+            scnVal += 1
+        else:
+            flag = int(scnVal)
+    return scnVal
+
+dankmemes = cv2.equalizeHist( greyImg)
+cv2.imshow("image", dankmemes)
+
+#def eq(signal, )
 
 
 
@@ -59,5 +74,18 @@ tempSd = calcSD(hist[0:lag], tempMean)
 print "mean",tempMean
 print "standard dev", tempSd
 poi(hist, tempMean, tempSd, lag)
-finalsignal = []
-for x in range(len(signal)):
+
+
+cutoff = int(0)
+cutoff = humpScan(signal)
+
+#Errors: it's cutting off grey areas, I need to preserve the gray and instead do it for whites.
+res, testimg = cv2.threshold(greyImg, (cutoff-10), 255, cv2.THRESH_TOZERO)
+
+cv2.imshow("testing2222", testimg)
+cv2.waitKey(0)
+
+"""for x in range(len(signal)):
+    hist[x] = signal[x]
+print hist"""
+print signal
