@@ -1,6 +1,7 @@
 __author__ = 'kingc3'
 import cv2
 import numpy as np
+import math
 
 img1 = cv2.imread("TestImages/textscan.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
@@ -25,6 +26,10 @@ def gutter(img1):
 
     testimg = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
 
+    cannyImg = cv2.Canny(grayImg, 100, 200)
+
+
+
     #im3, contours, heir = cv2.findContours(testimg, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     goodFeats = cv2.goodFeaturesToTrack(testimg, 200, 0.455, 15)
     M=cv2.moments(testimg)
@@ -32,11 +37,52 @@ def gutter(img1):
     cy = int(M['m01']/M['m00'])
     print cx
     print cy
+
+    cv2.circle(mask, (cx, cy), 3, (255,0,0), -1 )
+
+    crop1 = finalImg[0:,cx:]
+    crop2 = finalImg[0:, :cx]
     #print moments
     for x in goodFeats:
-        cv2.circle(mask, (x[0,0],x[0,1]),3,(255,0,255),-1)
+        cv2.circle(mask, ((x[0,0],x[0,1])),3,(255,0,255),-1)
     cv2.imshow("test",testimg)
+    grayCrop1 = cv2.cvtColor(crop1, cv2.COLOR_BGR2GRAY)
+    grayCrop1 = cv2.GaussianBlur(grayCrop1, (111, 111), 1)
+    grayCrop1 = cv2.erode(grayCrop1, kernel, iterations=1)
+    cannyImg = cv2.Canny(grayCrop1, 100, 200)
+
+    lines = cv2.HoughLinesP(cannyImg, 1, np.pi/180,
+
+                            threshold = 5,
+
+                            minLineLength = 300, maxLineGap = 70)
+
+    for lineSet in lines:
+
+        for line in lineSet:
+
+            cv2.line(crop1, (line[0], line[1]), (line[2], line[3]), (255, 255, 0))
+
+    grayCrop2 = cv2.cvtColor(crop2, cv2.COLOR_BGR2GRAY)
+    grayCrop2 = cv2.GaussianBlur(grayCrop2, (111, 111), 1)
+    grayCrop2 = cv2.erode(grayCrop2, kernel, iterations=1)
+    cannyImg2 = cv2.Canny(grayCrop2, 100, 200)
+
+    lines = cv2.HoughLinesP(cannyImg2, 1, np.pi/180,
+
+                            threshold = 5,
+
+                            minLineLength = 300, maxLineGap = 70)
+
+    for lineSet in lines:
+
+        for line in lineSet:
+
+            cv2.line(crop2, (line[0], line[1]), (line[2], line[3]), (255, 255, 0))
+    cv2.imshow('firstcrop',crop1)
+    cv2.imshow('secondcrop',crop2)
     cv2.imshow("fixed image", finalImg)
+
     cv2.imshow("mask",mask)
     cv2.waitKey(0)
 gutter(img1)
