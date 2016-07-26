@@ -113,7 +113,7 @@ def humpScan(signal):
     print bflag
     print wflag
     return bflag, wflag
-#get fuked boy 2
+#get fuked boy 2  2
 #THIS IS TESTING GAMMA CORRECTION BS W/ A LOOKUP TABLE
 """
 def adjust_gamma(image, gamma=1.0):
