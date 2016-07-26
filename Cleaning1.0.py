@@ -1,4 +1,48 @@
 __author__ = 'huangb3'
+"""
+                       ....?$8Z:....... ..+$I .
+                     .,.I7II7III777$$O...8O...:I.
+                .. ..M$$$$$$$$$$$$$$$$$$O$7.:~~:...
+                .. .7ZZ$ZOO8=???+IO$$$$OOO=8~O8887.
+             I ,~,.,,I.,,,.,,,..,?~~~+OI,,,,.,~IO?.
+          . ,,::=~..,,,,,,,,,,:,,,..:~:,::,,,,::DOO
+          .I+,:~:..,,..,,,,,,,.:.,,,,::.....:=:::7,
+          $..==...,,,.:,,,,,,.,,,.,,...=:,,,.,,,?:.
+        .7,.~?......,.:,,,,,,,,,=,,,,,,.?:~,,,,,::.
+        +.,=?,......,I...,,,,,,,,,,,.,,,.::::,,.,:, .
+       ..,=I,,... ..?...........,+....,,.,,,~.,,,,:..
+       ..~?..,.,,,..,...........:=.,..,,..=.:~,,,,::.
+       $,~,:,,,,,~.I,.............,,..,,,,,:,:,,,,,~:
+      .7,?~.,,.,,+,:.,,:.,,,,,,,:.=.,,,,,,..,,,:,,,,Z
+       :..?.,,,,:+.:.:.~,,,,,,,,+:=+,,.,,,.I,,,:,,,.Z
+      . .:+.,,,.:?+,.=,=,,,,,,,,.~I~=,,,,,,I,,,:,,,,?
+      . I:?.,,,.?=+:..+~~,,,,..:...O??++...:,,.,.,,,.
+        .:=...?~M~:ON.?,~,,,..=MNNNNM,,+,,:,,,,+,,,.
+        .=I+,.,,M,DDMNN....:.D88OM.MNN,=.,,,.,?:.....
+        ..?~,,..~.M+:.M.....,.:M?I.??+,,,.,,,:,,,~N..
+      ..Z.,.:=,....::,=........~=,.,I:,,+,,~:,.,~~:
+        ..,.,.~.,~=,..,..........,.,?.,:,.::,.===:I~.
+         .,,,,.?:?,,,,..........,:::+::,,,::,:~~~=+=~
+        ..,,,,.,?,,,,,.......~..,+=.::==:,:::I~7::$..
+            ..,,.+++?~......,.,8=+.::I=+~.::::::::.
+            ~..:,++=7~=$~8+?8?7$=D8=+++==.,:~:=.
+          .......==+I??II$ZO8O:Z=$I+=++==.,::M
+               .,$+~?...ZOO.,..,:~=~==~7..   .
+                 ,7.O...,I:~::..8=.+~=.7..
+                   .  ..8OD:,:..7..7=+=...
+                    ...,.OMZ,~..,.87~+878
+                     ...?8O+N,:DOI$8OII$?I .
+                      8?D8=+?,+,~II7$7?I$~8.
+                     ..7+?MZ.,.,OI,7.,,.$O
+                     ...?M+O.$~..,.=,,~:..   .
+                       . ?+?=O...,,,.OOODZ....
+                         .,7I$,,,.,~$D8OZ?,...
+                         ..     ..   .. ..   .
+
+                         Your waifu is shit
+"""
+
+
 import cv2
 import math
 import numpy
@@ -6,7 +50,7 @@ import numpy
 infl = 0
 lag = 10
 #setting up everything
-scanImg = cv2.imread("TestImages/textscancrop.jpg")
+scanImg = cv2.imread("TestImages/scan.jpg")
 greyImg = cv2.cvtColor(scanImg, cv2.COLOR_BGR2GRAY)
 hist = cv2.calcHist(greyImg, [0], None, [256], [0, 256])
 print len(hist)
@@ -53,13 +97,39 @@ def poi(hist, mean, Stdev, lag):
 
 def humpScan(signal):
     scnVal = 0
-    flag = 0
+    bflag = 0
+    wflag = 0
     for p in range(len(signal)):
         if signal[p] == 0:
             scnVal += 1
         else:
-            flag = int(scnVal)
-    return scnVal
+            bflag = int(scnVal)
+    scnVal = 255
+    for p in range(len(signal)):
+        if signal[255-p] == 0:
+            scnVal -= 1
+        else:
+            wflag = int(scnVal)
+    print bflag
+    print wflag
+    return bflag, wflag
+
+#THIS IS TESTING GAMMA CORRECTION BS W/ A LOOKUP TABLE
+"""
+def adjust_gamma(image, gamma=1.0):
+    invGamma = 1.0 / gamma
+    table = numpy.array([((i / 255.0) ** invGamma) * 255
+                         for i in numpy.arange(0, 256)]).astype("uint8")
+    return cv2.LUT(image, table)
+
+gamma = gamma if gamma > 0 else 0.1
+adjusted = adjust_gamma(original, gamma=gamma)
+cv2.putText(adjusted, "g={}".format(gamma), (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
+cv2.imshow("Images", numpy.hstack([original, adjusted]))
+cv2.waitKey(0)
+"""
+#END OF TEST CODE DO NOT RUN THIS SHIT
 
 dankmemes = cv2.equalizeHist( greyImg)
 cv2.imshow("image", dankmemes)
@@ -76,13 +146,20 @@ print "standard dev", tempSd
 poi(hist, tempMean, tempSd, lag)
 
 
-cutoff = int(0)
-cutoff = humpScan(signal)
+bcutoff = int(0)
+wcutoff = int(0)
+bcutoff, wcutoff = humpScan(signal)
 
 #Errors: it's cutting off grey areas, I need to preserve the gray and instead do it for whites.
-res, testimg = cv2.threshold(greyImg, (cutoff-10), 255, cv2.THRESH_TOZERO)
+res, testimg = cv2.threshold(greyImg, (bcutoff/1.5), 255, cv2.THRESH_TOZERO)
+res, ndstep = cv2.threshold(testimg, (255-(wcutoff/4)), 255, cv2.THRESH_BINARY)
+ndstep = cv2.bitwise_or(ndstep, testimg)
+
+dunzo = cv2.calcHist(ndstep, [0], None, [256], [0, 256])
+print dunzo
 
 cv2.imshow("testing2222", testimg)
+cv2.imshow("whiteimg", ndstep)
 cv2.waitKey(0)
 
 """for x in range(len(signal)):
