@@ -3,16 +3,25 @@ import cv2
 import numpy as np
 import math
 
+
 img1 = cv2.imread("TestImages/textscan.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 def lineSearch(minX, maxX):
-    if abs(minX[float(1)]-minX[float(3)]/minX[float(0)]-minX[float(2)]) - abs(maxX[float(1)]-maxX[float(3)]/maxX[float(0)]-maxX[float(2)]) > .1 :
-        works = 0
+    if float((minX[float(0)]-minX[float(2)])/(minX[float(1)]-minX[float(3)])) - abs((maxX[float(0)]-maxX[float(2)])/(maxX[float(1)]-maxX[float(3)])) > .01  :
+        works = False
     else:
-        works = 1
+        works = True
     return works
 
+
 def gutter(img1):
+    lowNumb = 10000
+    highNumb = 0
+    lowNumb2 = 10000
+    highNumb2 = 0
+    foundSlope = False
+    foundSlope2 = False
+
     grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     kernel = np.ones((11,11),np.uint8)
     grayImg = cv2.GaussianBlur(grayImg, (111, 111), 1)
@@ -49,6 +58,7 @@ def gutter(img1):
 
     crop1 = finalImg[0:,cx:]
     crop2 = finalImg[0:, :cx]
+
     #print moments
     for x in goodFeats:
         cv2.circle(mask, ((x[0,0],x[0,1])),3,(255,0,255),-1)
@@ -57,7 +67,7 @@ def gutter(img1):
     grayCrop1 = cv2.GaussianBlur(grayCrop1, (111, 111), 1)
     grayCrop1 = cv2.erode(grayCrop1, kernel, iterations=1)
     cannyImg = cv2.Canny(grayCrop1, 100, 200)
-
+    cv2.imshow("KEPPA", cannyImg)
     lines = cv2.HoughLinesP(cannyImg, 1, np.pi/180,
 
                             threshold = 5,
@@ -74,6 +84,7 @@ def gutter(img1):
     grayCrop2 = cv2.GaussianBlur(grayCrop2, (111, 111), 1)
     grayCrop2 = cv2.erode(grayCrop2, kernel, iterations=1)
     cannyImg2 = cv2.Canny(grayCrop2, 100, 200)
+    cv2.imshow("Kappaaaa", cannyImg2)
 
     lines2 = cv2.HoughLinesP(cannyImg2, 1, np.pi/180,
 
@@ -89,8 +100,71 @@ def gutter(img1):
                 verticaLines.append(line)
     print verticaLines
     #PLUG THE SHIT INTO THE FIRST FUNCTION!
-
-
+    while foundSlope is False:
+        pos = 0
+        for line in verticaLines:
+            if pos != 0:
+                pos +=1
+            currentNumb = int(line[0])
+            print line
+            if currentNumb > highNumb:
+                highNumb = currentNumb
+                highLine = line
+                highPos = pos
+                print "highLine", highLine
+            if currentNumb < lowNumb:
+                lowNumb = currentNumb
+                lowLine = line
+                lowPos = pos
+                print "lowline", lowLine
+        works = lineSearch(lowLine, highLine)
+        if works is True:
+            print "works works"
+            foundSlope = True
+            angle = abs(math.atan(lowLine[0]-lowLine[2]/lowLine[1]-lowLine[3]))
+            angle2 = abs((math.atan(highLine[0]-highLine[2])/(lowLine[1]-lowLine[3])))
+            print 'angle', angle
+            print 'angle2', angle2
+        if works is False:
+            verticaLines.pop(lowPos)
+            verticaLines.pop(highPos)
+            print verticaLines
+    verticaLines2 = []
+    for lineSet in lines:
+        for line in lineSet:
+            if abs(line[0] - line[2]) <= w/10:
+                verticaLines2.append(line)
+    print verticaLines2
+    #PLUG THE SHIT INTO THE FIRST FUNCTION!
+    while foundSlope2 is False:
+        pos = 0
+        for line in verticaLines2:
+            if pos != 0:
+                pos +=1
+            currentNumb2 = int(line[0])
+            print line
+            if currentNumb2 > highNumb2:
+                highNumb2 = currentNumb2
+                highLine2 = line
+                highPos2 = pos
+                print "highLine", highLine
+            if currentNumb2 < lowNumb2:
+                lowNumb2 = currentNumb2
+                lowLine2 = line
+                lowPos2 = pos
+                print "lowline", lowLine2
+        works2 = lineSearch(lowLine2, highLine2)
+        if works2 is True:
+            print "works works"
+            foundSlope2 = True
+            secondAngle = abs(math.atan(lowLine2[0]-lowLine2[2]/lowLine2[1]-lowLine2[3]))
+            secondAngle2 = abs((math.atan(highLine2[0]-highLine2[2])/(lowLine2[1]-lowLine2[3])))
+            print 'angle21', secondAngle
+            print 'angle22', secondAngle2
+        if works is False:
+            verticaLines2.pop(lowPos2)
+            verticaLines2.pop(highPos2)
+            print verticaLines
     for lineSet in lines2:
 
         for line in lineSet:
