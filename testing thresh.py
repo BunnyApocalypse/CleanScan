@@ -1,11 +1,10 @@
 __author__ = 'huangb3'
 import cv2
-scnImg = cv2.imread("TestImages/grad.jpg")
-cv2.imshow("scnImg", scnImg)
-
-res, testimg = cv2.threshold(scnImg, 150, 255, cv2.THRESH_TOZERO)
-res, ndstep = cv2.threshold(scnImg, 127, 255,cv2.THRESH_BINARY_INV)
-
-cv2.imshow("tozero", testimg)
-cv2.imshow("trunc", ndstep)
-cv2.waitKey(0)
+import numpy
+table = numpy.array([i * 3
+                         for i in numpy.arange(0, 256)])
+for i in range(table.size):
+    if table[i] > 255:
+        table[i] = 255
+table = table.astype("uint8")
+print table

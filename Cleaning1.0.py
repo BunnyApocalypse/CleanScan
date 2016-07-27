@@ -38,8 +38,6 @@ __author__ = 'huangb3'
                        . ?+?=O...,,,.OOODZ....
                          .,7I$,,,.,~$D8OZ?,...
                          ..     ..   .. ..   .
-
-                         Your laifu is shit
 """""
 
 
@@ -68,9 +66,9 @@ def calcSD(arr,mean):
 #poi means poi and i aint going to explain shit to you poi
 def poi(hist, mean, Stdev, lag):
     global signal
-    for i in range(len(hist)):
+    oldmean = mean
+    for i in range(hist.size):
         if i > lag:
-            oldmean = mean
             if hist[i] > ((mean + infl * Stdev)/(1+infl)):
                 mean = (oldmean + infl * hist[i]) / (1+infl)
                 Stdev = (Stdev + infl * math.sqrt((hist[i] - oldmean)**2)) / (1+infl)
@@ -102,6 +100,7 @@ def humpScan(signal):
     print bflag
     print wflag
     return bflag, wflag
+
 #get fuked boy 2  2
 #THIS IS TESTING GAMMA CORRECTION BS W/ A LOOKUP TABLE
 
@@ -112,32 +111,45 @@ def gammaAdj(image, gamma, thresh):
     print table
     return cv2.LUT(image, table)
 
+def linearAdj(image, wlimit, blimit):
+    change = (255-blimit)/wlimit
+    print "blimit", blimit
+    table = numpy.array([i-blimit * change
+                         for i in numpy.arange(0, 256)])
+    for i in range(table.size):
+        if table[i] > 255:
+            table[i] = 255
+        elif table[i] < 0:
+            table[i] = 0
+    table = table.astype("uint8")
+    print table
+    return cv2.LUT(image, table)
+
 
 infl = 0
-lag = 10
-#setting up everything
-scanImg = cv2.imread("TestImages/Scan_Pic0260.jpg")
+lag = 3
+signal = numpy.zeros(256)
+
+#prep image
+scanImg = cv2.imread("TestImages/scan.jpg")
 greyImg = cv2.cvtColor(scanImg, cv2.COLOR_BGR2GRAY)
 hist = cv2.calcHist(greyImg, [0], None, [256], [0, 256])
+
+#debug
 print len(hist)
-#Display base image
 cv2.imshow("Original", greyImg)
-signal = numpy.zeros(256)
-#Read in Histogram array outputs peak Array, 1
 
 
-#END OF TEST CODE DO NOT RUN THIS SHIT
+#dankmemes = cv2.equalizeHist( greyImg)
+#cv2.imshow("image", dankmemes)
 
-dankmemes = cv2.equalizeHist( greyImg)
-cv2.imshow("image", dankmemes)
-
-
-
-print hist
+#print hist
+#Calc mean and sd
 tempMean = calcMean(hist[0:lag])
 tempSd = calcSD(hist[0:lag], tempMean)
-print "mean",tempMean
-print "standard dev", tempSd
+#print "mean",tempMean
+#print "standard dev", tempSd
+
 poi(hist, tempMean, tempSd, lag)
 
 
@@ -148,10 +160,11 @@ print "cutoff", wcutoff
 #Errors: it's cutting off grey areas, I need to preserve the gray and instead do it for whites.
 
 
-res, testimg = cv2.threshold(greyImg, (bcutoff/2), 255, cv2.THRESH_TOZERO)
+res, testimg = cv2.threshold(greyImg, (bcutoff/1.5), 255, cv2.THRESH_TOZERO)
 """res, ndstep = cv2.threshold(testimg, (255-(wcutoff/4)), 255, cv2.THRESH_BINARY)
 ndstep = cv2.bitwise_or(ndstep, testimg)"""
 wcutoff = float(wcutoff)
+
 gamma = float(1+(math.log(199, 255)))
 print "gamma", gamma
 print type(gamma)
@@ -165,11 +178,14 @@ poi(dunzo, tempMean, tempSd, lag)
 bcutoff, wcutoff = humpScan(signal)
 print signal
 res, ndsetp = cv2.threshold(ndstep, (bcutoff), 255, cv2.THRESH_TOZERO)
-
+ndstep = linearAdj(ndstep, wcutoff, bcutoff)
 
 cv2.imshow("testing2222", testimg)
 cv2.imshow("whiteimg", ndstep)
 cv2.waitKey(0)
+
+
+
 
 """for x in range(len(signal)):
     hist[x] = signal[x]
