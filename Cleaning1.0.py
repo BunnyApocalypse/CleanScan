@@ -112,17 +112,21 @@ def gammaAdj(image, gamma, thresh):
     return cv2.LUT(image, table)
 
 def linearAdj(image, wlimit, blimit):
-    change = (255-blimit)/wlimit
-    print "blimit", blimit
-    table = numpy.array([i-blimit * change
+    blimit = float(blimit/4)
+    wlimit = float(wlimit)
+    m = 255/(wlimit-blimit)
+
+    print m
+    table = numpy.array([((i - blimit) * m)
                          for i in numpy.arange(0, 256)])
+    print (wlimit - blimit) * m
     for i in range(table.size):
         if table[i] > 255:
             table[i] = 255
         elif table[i] < 0:
             table[i] = 0
-    table = table.astype("uint8")
     print table
+    table = table.astype("uint8")
     return cv2.LUT(image, table)
 
 
@@ -131,7 +135,7 @@ lag = 3
 signal = numpy.zeros(256)
 
 #prep image
-scanImg = cv2.imread("TestImages/scan.jpg")
+scanImg = cv2.imread("TestImages/*.jpg")
 greyImg = cv2.cvtColor(scanImg, cv2.COLOR_BGR2GRAY)
 hist = cv2.calcHist(greyImg, [0], None, [256], [0, 256])
 
@@ -177,8 +181,8 @@ tempSd = calcSD(dunzo[0:lag], tempMean)
 poi(dunzo, tempMean, tempSd, lag)
 bcutoff, wcutoff = humpScan(signal)
 print signal
-res, ndsetp = cv2.threshold(ndstep, (bcutoff), 255, cv2.THRESH_TOZERO)
-ndstep = linearAdj(ndstep, wcutoff, bcutoff)
+#res, ndsetp = cv2.threshold(ndstep, (bcutoff), 255, cv2.THRESH_TOZERO)
+ndstep = linearAdj(greyImg, wcutoff, bcutoff)
 
 cv2.imshow("testing2222", testimg)
 cv2.imshow("whiteimg", ndstep)
