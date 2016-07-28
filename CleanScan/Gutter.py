@@ -2,7 +2,7 @@ __author__ = 'kingc3'
 import cv2
 import numpy as np
 import math
-
+#This code makes gutters better
 
 img1 = cv2.imread("TestImages/textscan.jpg")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
