@@ -4,7 +4,7 @@ import numpy as np
 import math
 #This code makes gutters better
 
-img1 = cv2.imread("TestImages/textscan.jpg")
+img1 = cv2.imread("../TestImages/frenchscan.png")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 def gutter(img1):
     grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)

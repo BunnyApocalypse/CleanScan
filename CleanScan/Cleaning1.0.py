@@ -135,7 +135,7 @@ lag = 3
 signal = numpy.zeros(256)
 
 #prep image
-scanImg = cv2.imread("../TestImages/Scan_Pic0260.jpg")
+scanImg = cv2.imread("../TestImages/frenchscan.png")
 greyImg = cv2.cvtColor(scanImg, cv2.COLOR_BGR2GRAY)
 hist = cv2.calcHist(greyImg, [0], None, [256], [0, 256])
 
