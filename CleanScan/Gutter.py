@@ -6,8 +6,8 @@ import math
 
 img1 = cv2.imread("../TestImages/frenchscan.png")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
-def gutter(img1):
-    grayImg = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+def gutter(img1, grayImg):
+
     kernel = np.ones((11,11),np.uint8)
     grayImg = cv2.GaussianBlur(grayImg, (111, 111), 1)
     grayImg = cv2.erode(grayImg, kernel, iterations=1)
