@@ -73,7 +73,7 @@ def poi(hist, mean, Stdev, lag):
                 mean = (oldmean + infl * hist[i]) / (1+infl)
                 Stdev = (Stdev + infl * math.sqrt((hist[i] - oldmean)**2)) / (1+infl)
                 signal[i] = 1
-                if hist[i] > 1.2 * ((mean + infl * Stdev)/(1+infl)):
+                if hist[i] > 2 * ((mean + infl * Stdev)/(1+infl)):
                     signal[i] = 2
             else:
                 mean = (oldmean + hist[i]) / 2
@@ -135,7 +135,7 @@ lag = 3
 signal = numpy.zeros(256)
 
 #prep image
-scanImg = cv2.imread("TestImages/*.jpg")
+scanImg = cv2.imread("../TestImages/Scan_Pic0260.jpg")
 greyImg = cv2.cvtColor(scanImg, cv2.COLOR_BGR2GRAY)
 hist = cv2.calcHist(greyImg, [0], None, [256], [0, 256])
 
