@@ -64,8 +64,7 @@ def calcSD(arr,mean):
 
 # is POI
 #poi means poi and i aint going to explain shit to you poi
-def poi(hist, mean, Stdev, lag):
-    global signal
+def poi(hist, mean, Stdev, lag, infl, signal):
     oldmean = mean
     for i in range(hist.size):
         if i > lag:
@@ -81,6 +80,7 @@ def poi(hist, mean, Stdev, lag):
                 signal[i] = 0
         if i < lag:
             print "wee."
+    return signal
 
 def humpScan(signal):
     scnVal = 0
@@ -127,8 +127,10 @@ def linearAdj(image, wlimit, blimit):
             table[i] = 0
     print table
     table = table.astype("uint8")
-    return cv2.LUT(image, table)
-
+    tempimg =  cv2.LUT(image, table)
+    afterimg = cv2.cvtColor(tempimg, cv2.COLOR_GRAY2BGR)
+    return tempimg
+"""
 
 infl = 0
 lag = 3
@@ -165,8 +167,8 @@ print "cutoff", wcutoff
 
 
 res, testimg = cv2.threshold(greyImg, (bcutoff/1.5), 255, cv2.THRESH_TOZERO)
-"""res, ndstep = cv2.threshold(testimg, (255-(wcutoff/4)), 255, cv2.THRESH_BINARY)
-ndstep = cv2.bitwise_or(ndstep, testimg)"""
+res, ndstep = cv2.threshold(testimg, (255-(wcutoff/4)), 255, cv2.THRESH_BINARY)
+ndstep = cv2.bitwise_or(ndstep, testimg)
 wcutoff = float(wcutoff)
 
 gamma = float(1+(math.log(199, 255)))
@@ -191,6 +193,6 @@ cv2.waitKey(0)
 
 
 
-"""for x in range(len(signal)):
+for x in range(len(signal)):
     hist[x] = signal[x]
 print hist"""

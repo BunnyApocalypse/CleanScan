@@ -4,7 +4,7 @@ import numpy as np
 import math
 #This code makes gutters better
 
-img1 = cv2.imread("../TestImages/frenchscan.png")
+#img1 = cv2.imread("../TestImages/frenchscan.png")
 #kernel = cv2.getStructuringElement(cv2.MORPH_CLOSE, (11, 11))
 def gutter(img1, grayImg):
 
@@ -90,101 +90,107 @@ def verticalSort(lines, lines2, crop1, crop2):
         for line in lineSet:
             if abs(line[0] - line[2]) <= w / 10:
                 verticaLines2.append(line)
-    return verticaLines, verticaLines2
+    if len(verticaLines) > 100:
+        broken = True
+    else:
+        broken = False
+    return verticaLines, verticaLines2, broken
 
-def minMaxLines(verticaLines, verticaLines2):
-    lowNumb = 10000
-    highNumb = 0
-    lowNumb2 = 10000
-    highNumb2 = 0
-    foundSlope = False
-    foundSlope2 = False
-    while foundSlope is False:
-        pos = 0
-        for line in verticaLines:
-            if pos != 0:
-                pos +=1
-            currentNumb = int(line[0])
+def minMaxLines(verticaLines, verticaLines2, broken):
 
-            if currentNumb > highNumb:
-                highNumb = currentNumb
-                highLine = line
-                highPos = pos
+    if broken == False:
+        lowNumb = 10000
+        highNumb = 0
+        lowNumb2 = 10000
+        highNumb2 = 0
+        foundSlope = False
+        foundSlope2 = False
+        while foundSlope is False:
+            pos = 0
+            for line in verticaLines:
+                if pos != 0:
+                    pos +=1
+                currentNumb = int(line[0])
 
-            if currentNumb < lowNumb:
-                lowNumb = currentNumb
-                lowLine = line
-                lowPos = pos
+                if currentNumb > highNumb:
+                    highNumb = currentNumb
+                    highLine = line
+                    highPos = pos
 
-        works = lineSearch(lowLine, highLine)
+                if currentNumb < lowNumb:
+                    lowNumb = currentNumb
+                    lowLine = line
+                    lowPos = pos
 
-        if works is True:
-            foundSlope = True
-            ys1 = highLine[1] - highLine [3]
-            ys = lowLine[1] - lowLine[3]
-            if ys == 0:
-                angle = 0
-            else:
-                angle = math.degrees(math.atan(((lowLine[0] - lowLine[2]) / ys)))
-            if ys1 == 0:
-                angle2 = 0
-            else:
-                angle2 = math.degrees(math.atan(((highLine[0] - highLine[2] / ys1))))
-            angle = (angle + angle2)/-2
-            print angle
+            works = lineSearch(lowLine, highLine)
 
-        if works is False:
-            verticaLines.pop(lowPos)
-            verticaLines.pop(highPos)
-    while foundSlope2 is False:
+            if works is True:
+                foundSlope = True
+                ys1 = highLine[1] - highLine [3]
+                ys = lowLine[1] - lowLine[3]
+                if ys == 0:
+                    angle = 0
+                else:
+                    angle = math.degrees(math.atan(((lowLine[0] - lowLine[2]) / ys)))
+                if ys1 == 0:
+                    angle2 = 0
+                else:
+                    angle2 = math.degrees(math.atan(((highLine[0] - highLine[2] / ys1))))
+                angle = (angle + angle2)/-2
+                print angle
 
-        pos = 0
+            if works is False:
+                verticaLines.pop(lowPos)
+                verticaLines.pop(highPos)
+        while foundSlope2 is False:
 
-        for line in verticaLines2:
+            pos = 0
 
-            if pos != 0:
+            for line in verticaLines2:
 
-                pos += 1
+                if pos != 0:
 
-            currentNumb2 = int(line[0])
+                    pos += 1
 
-            if currentNumb2 > highNumb2:
+                currentNumb2 = int(line[0])
 
-                highNumb2 = currentNumb2
-                highLine2 = line
-                highPos2 = pos
+                if currentNumb2 > highNumb2:
 
-            if currentNumb2 < lowNumb2:
+                    highNumb2 = currentNumb2
+                    highLine2 = line
+                    highPos2 = pos
 
-                lowNumb2 = currentNumb2
-                lowLine2 = line
-                lowPos2 = pos
+                if currentNumb2 < lowNumb2:
 
-        works2 = lineSearch(lowLine2, highLine2)
+                    lowNumb2 = currentNumb2
+                    lowLine2 = line
+                    lowPos2 = pos
 
-        if works2 is True:
+            works2 = lineSearch(lowLine2, highLine2)
 
-            foundSlope2 = True
-            xs22 = highLine2[0] - highLine2[2]
-            xs2 = lowLine2[0] - lowLine2[2]
-            if xs2 == 0:
-                secondAngle = 0
-            else:
-                secondAngle = math.tan(((lowLine2[1] - lowLine2[3]) / xs2))
-            if xs22 == 0:
-                secondAngle2 = 0
-            else:
-                secondAngle2 = math.tan(((highLine2[1] - highLine2[3] / xs22)))
-            secondAngle = (secondAngle + secondAngle2)/2
+            if works2 is True:
 
-            print 'angle2', secondAngle
+                foundSlope2 = True
+                xs22 = highLine2[0] - highLine2[2]
+                xs2 = lowLine2[0] - lowLine2[2]
+                if xs2 == 0:
+                    secondAngle = 0
+                else:
+                    secondAngle = math.tan(((lowLine2[1] - lowLine2[3]) / xs2))
+                if xs22 == 0:
+                    secondAngle2 = 0
+                else:
+                    secondAngle2 = math.tan(((highLine2[1] - highLine2[3] / xs22)))
+                secondAngle = (secondAngle + secondAngle2)/2
 
-        if works is False:
+                print 'angle2', secondAngle
 
-            verticaLines2.pop(lowPos2)
-            verticaLines2.pop(highPos2)
-            print verticaLines
-    return angle, secondAngle
+            if works is False:
+
+                verticaLines2.pop(lowPos2)
+                verticaLines2.pop(highPos2)
+                print verticaLines
+        return angle, secondAngle
 
 def lineSearch(minX, maxX):
 
@@ -199,20 +205,22 @@ def lineSearch(minX, maxX):
 
     return works
 
-def rotateCrops(crop1, crop2, angle, secondAngle):
-    rows,cols,ch = crop1.shape
-    rows2,cols2,ch2 = crop2.shape
-    Rotate = cv2.getRotationMatrix2D((cols/2,rows/2), (angle * -1),1)
-    Rotate2 = cv2.getRotationMatrix2D((rows2/2,cols2/2),(secondAngle * -1),1)
-    rotatedCrop = cv2.warpAffine(crop1, Rotate,(cols, rows))
-    rotatedCrop2 = cv2.warpAffine(crop2, Rotate2,(cols2,rows2))
-    cv2.imshow("rotate1", rotatedCrop)
-    cv2.imshow("rotate2", rotatedCrop2)
-    cv2.waitKey(0)
-
+def rotateCrops(crop1, crop2, angle, secondAngle, broken):
+    if broken == False:
+        rows,cols,ch = crop1.shape
+        rows2,cols2,ch2 = crop2.shape
+        Rotate = cv2.getRotationMatrix2D((cols/2,rows/2), (angle * -1),1)
+        Rotate2 = cv2.getRotationMatrix2D((rows2/2,cols2/2),(secondAngle * -1),1)
+        rotatedCrop = cv2.warpAffine(crop1, Rotate,(cols, rows))
+        rotatedCrop2 = cv2.warpAffine(crop2, Rotate2,(cols2,rows2))
+        cv2.imshow("rotate1", rotatedCrop)
+        cv2.imshow("rotate2", rotatedCrop2)
+        cv2.waitKey(0)
+""""
 mask, finalImg = gutter(img1)
 crop1, crop2 = makeCrops(mask, finalImg)
 lines, lines2 = cropLines(crop1, crop2)
 verticaLines, verticaLines2 = verticalSort(lines, lines2, crop1, crop2)
 angle, secondAngle = minMaxLines(verticaLines, verticaLines2)
 rotateCrops(crop1, crop2, angle, secondAngle)
+"""""
