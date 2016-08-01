@@ -191,7 +191,10 @@ def minMaxLines(verticaLines, verticaLines2, broken):
                 verticaLines2.pop(highPos2)
                 print verticaLines
         return angle, secondAngle
-
+    else:
+        angle = None
+        secondAngle = None
+        return angle, secondAngle
 def lineSearch(minX, maxX):
 
     if float((minX[float(0)] - minX[float(2)]) / (minX[float(1)] - minX[float(3)])) - abs((maxX[float(0)] -
