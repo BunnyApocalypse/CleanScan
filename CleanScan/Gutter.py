@@ -54,7 +54,8 @@ def cropLines(crop1, crop2):
     lines = cv2.HoughLinesP(cannyImg, 1, np.pi/180,
                             threshold = 5,
                             minLineLength = 300, maxLineGap = 70)
-
+    cv2.imshow("bang",cannyImg)
+    cv2.waitKey(0)
     for lineSet in lines:
         for line in lineSet:
             cv2.line(crop1, (line[0], line[1]), (line[2], line[3]), (255, 255, 0))
